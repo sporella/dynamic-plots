@@ -1,0 +1,1 @@
+# Vistas dinámicas de gráficos
