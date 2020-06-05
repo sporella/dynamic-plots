@@ -1,0 +1,59 @@
+---
+title: "Vistas Dinámicas"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# Día 24: coropletas
+
+Gráfico de temperatura superficial mes de enero en Región Metropolitana, Santiago, Chile. Los datos provienen del sensor MODIS (MOD11A1) y son los promedios de los últimos 10 años. Luego se calculó la media por comuna.
+
+```{r, message=F, warning=F}
+library(raster)
+library(tidyverse)
+library(sf)
+library(ggforce)
+
+# Cargar raster y convertir unidades --------------------------------------
+
+lst <- raster("data/lst_01.tif")
+lst <- (lst * 0.02) - 273.15
+
+# Leer comunas ------------------------------------------------------------
+
+comunas <- st_read("data/comunas_rm.shp", quiet = TRUE)
+
+# Hacer estadística zonal -------------------------------------------------
+
+mean_ene <- comunas %>%
+  dplyr::select(Comuna, Region, Provincia) %>%
+  mutate(ene = raster::extract(lst$lst_01, comunas["Comuna"], fun = mean, na.rm =
+                                 T))
+
+library(leaflet)
+library(leaflet.extras)
+
+bins <- seq(floor(min(mean_ene$ene)), ceiling(max(mean_ene$ene)), length.out = 10)
+pal <- colorBin(viridis::plasma(10), domain = mean_ene$ene, bins = bins)
+
+labels <- sprintf(
+  "<strong>%s</strong><br/>%g °C promedio mes Enero",
+  mean_ene$Comuna, round(mean_ene$ene,2)
+) %>% lapply(htmltools::HTML)
+
+
+leaflet(mean_ene) %>%
+  addTiles() %>% 
+  addPolygons(fillColor = ~pal(ene),
+              weight = 2,
+              opacity = 1,
+              color = "white",
+              dashArray = "3",
+              fillOpacity = 0.7,
+              label = labels)
+
+```
+
