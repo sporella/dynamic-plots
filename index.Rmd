@@ -1,6 +1,13 @@
 ---
 title: "Vistas Dinámicas"
-output: html_document
+output: 
+  html_document:
+    theme: journal
+    highlight: zenburn
+    toc: true
+    toc_depht: 2
+    toc_float: true
+runtime: shiny    
 ---
 
 ```{r setup, include=FALSE}
@@ -57,3 +64,12 @@ leaflet(mean_ene) %>%
 
 ```
 
+
+# Día 28: Diagramas de cuerdas
+
+Los datos fueron obtenidos desde ![Directorio de Transporte Público Metropolitano](http://www.dtpm.gob.cl/index.php/documentos/matrices-de-viaje) como tablas agregadas para el año 2019.
+
+```{r}
+library(shiny)
+shinyAppFile("app.R", options = list(height = 600))
+```
