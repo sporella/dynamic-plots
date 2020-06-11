@@ -4,7 +4,7 @@ library(hms)
 library(shiny)
 
 
-datos <- read_csv2("data/matriz_viajes.csv")
+datos <- read_csv2("data/matriz_viajes.csv") %>% select(1:4)
 horas <- unique(datos$MediaHora)
 horast <- hms(horas)
 names(horas) <- horast
@@ -28,9 +28,6 @@ server <- shinyServer(function(input, output) {
     library(chorddiag)
     library(tidyverse)
     library(hms)
-    
-
-    
       
     datos <- datos %>% 
       filter(MediaHora == input$n_hora) %>%
